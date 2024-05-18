@@ -24,21 +24,21 @@ const Configure = () => {
   };
 
   return (
-    <Container centerContent maxW="container.md" py={10}>
+    <Container centerContent maxW="container.md" py={10} boxShadow="lg" p={10} bg="white" borderRadius="md">
       <VStack spacing={4} width="100%">
         <FormControl id="domain">
-          <FormLabel>Target Domain</FormLabel>
+          <FormLabel fontSize="lg" color="teal.500" fontFamily="Roboto, sans-serif">Target Domain</FormLabel>
           <Input type="text" value={domain} onChange={handleDomainChange} />
         </FormControl>
         <FormControl id="threshold">
-          <FormLabel>Set Lead Threshold</FormLabel>
+          <FormLabel fontSize="lg" color="teal.500" fontFamily="Roboto, sans-serif">Set Lead Threshold</FormLabel>
           <Input type="number" value={threshold} onChange={handleThresholdChange} />
         </FormControl>
         <FormControl id="description">
-          <FormLabel>Lead Description</FormLabel>
+          <FormLabel fontSize="lg" color="teal.500" fontFamily="Roboto, sans-serif">Lead Description</FormLabel>
           <Input type="text" value={description} onChange={handleDescriptionChange} />
         </FormControl>
-        <Button colorScheme="teal" size="lg" onClick={handleSubmit}>Save and Fetch Leads</Button>
+        <Button colorScheme="teal" size="lg" onClick={handleSubmit} boxShadow="md">Save and Fetch Leads</Button>
       </VStack>
     </Container>
   );
