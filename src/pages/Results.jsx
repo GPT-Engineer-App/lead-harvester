@@ -25,8 +25,8 @@ const Results = () => {
         {leads.length > 0 ? (
           leads.map((lead, index) => (
             <Box key={index} p={4} borderWidth="1px" borderRadius="md" width="100%">
-              <Text>Name: {lead.name}</Text>
-              <Text>Email: {lead.email}</Text>
+              <Text>Title: {lead.title}</Text>
+              <Text>Description: {lead.description}</Text>
               <Text>Company: {lead.company}</Text>
             </Box>
           ))
