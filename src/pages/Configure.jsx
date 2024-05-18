@@ -4,19 +4,19 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const Configure = () => {
-  const [threshold, setThreshold] = useState("");
+  const [minimumOffer, setMinimumOffer] = useState("");
   const [domain, setDomain] = useState("");
   const [description, setDescription] = useState("");
 
   const navigate = useNavigate();
 
-  const handleThresholdChange = (e) => setThreshold(e.target.value);
+  const handleMinimumOfferChange = (e) => setMinimumOffer(e.target.value);
   const handleDomainChange = (e) => setDomain(e.target.value);
   const handleDescriptionChange = (e) => setDescription(e.target.value);
 
   const handleSubmit = async () => {
     try {
-      await axios.post("/api/crawl", { domain, description, threshold });
+      await axios.post("/api/crawl", { domain, description, minimumOffer });
       navigate("/results");
     } catch (error) {
       console.error("Error submitting configuration:", error);
@@ -30,9 +30,9 @@ const Configure = () => {
           <FormLabel>Target Domain</FormLabel>
           <Input type="text" value={domain} onChange={handleDomainChange} />
         </FormControl>
-        <FormControl id="threshold">
-          <FormLabel>Set Lead Threshold</FormLabel>
-          <Input type="number" value={threshold} onChange={handleThresholdChange} />
+        <FormControl id="minimumOffer">
+          <FormLabel>Set Minimum Offer (INR)</FormLabel>
+          <Input type="number" value={minimumOffer} onChange={handleMinimumOfferChange} />
         </FormControl>
         <FormControl id="description">
           <FormLabel>Lead Description</FormLabel>
