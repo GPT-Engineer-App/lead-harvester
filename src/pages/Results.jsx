@@ -19,19 +19,20 @@ const Results = () => {
   }, []);
 
   return (
-    <Container centerContent maxW="container.md" py={10}>
+    <Container centerContent maxW="container.md" py={10} bg="white" boxShadow="lg" borderRadius="md">
       <VStack spacing={4} width="100%">
-        <Text fontSize="2xl" fontWeight="bold">Fetched Leads</Text>
+        <Text fontSize="2xl" fontWeight="bold" color="gray.800">Fetched Leads</Text>
         {leads.length > 0 ? (
           leads.map((lead, index) => (
-            <Box key={index} p={4} borderWidth="1px" borderRadius="md" width="100%">
-              <Text>Title: {lead.title}</Text>
-              <Text>Description: {lead.description}</Text>
-              <Text>Company: {lead.company}</Text>
+            <Box key={index} p={4} borderWidth="1px" borderRadius="md" width="100%" bg="gray.50">
+              <Text fontSize="lg" fontWeight="bold" color="gray.800">Title: {lead.title}</Text>
+              <Text color="gray.600">Description: {lead.description}</Text>
+              <Text color="gray.600">Company: {lead.company}</Text>
+              <Text color="gray.600">Offer: ₹{lead.offer}</Text>
             </Box>
           ))
         ) : (
-          <Text>No leads found.</Text>
+          <Text color="gray.600">No leads found.</Text>
         )}
       </VStack>
     </Container>
