@@ -4,12 +4,18 @@ import { Link } from "react-router-dom";
 
 const Configure = () => {
   const [threshold, setThreshold] = useState("");
+  const [domain, setDomain] = useState("");
 
   const handleThresholdChange = (e) => setThreshold(e.target.value);
+  const handleDomainChange = (e) => setDomain(e.target.value);
 
   return (
     <Container centerContent maxW="container.md" py={10}>
       <VStack spacing={4} width="100%">
+        <FormControl id="domain">
+          <FormLabel>Target Domain</FormLabel>
+          <Input type="text" value={domain} onChange={handleDomainChange} />
+        </FormControl>
         <FormControl id="threshold">
           <FormLabel>Set Lead Threshold</FormLabel>
           <Input type="number" value={threshold} onChange={handleThresholdChange} />
