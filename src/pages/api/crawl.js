@@ -1,6 +1,7 @@
 import axios from "axios";
 import cheerio from "cheerio";
 import { createRequire } from "module";
+import { parseDocument } from "htmlparser2";
 const require = createRequire(import.meta.url);
 const { similarity } = require("ml-string-similarity");
 
@@ -12,13 +13,16 @@ export default async function handler(req, res) {
       const leads = [];
       let paginationCount = 0;
 
-      const getLeadsFromPage = ($) => {
-        $("div.JobSearchCard-item").each((index, element) => {
-          const jobTitle = $(element).find("a.JobSearchCard-primary-heading-link").text().trim();
-          const jobDescription = $(element).find("p.JobSearchCard-primary-description").text().trim();
-          const jobCompany = $(element).find("a.JobSearchCard-primary-subtitle-link").text().trim();
-          const jobOffer = parseFloat($(element).find("span.JobSearchCard-primary-offer").text().trim().replace(/[^0-9.-]+/g, ""));
-          const jobDate = new Date($(element).find("time.JobSearchCard-primary-date").attr("datetime"));
+      const getLeadsFromPage = ($, html) => {
+        const document = parseDocument(html);
+        const jobElements = $(document).find("div:contains('Job')");
+
+        jobElements.each((index, element) => {
+          const jobTitle = $(element).find(":contains('Title')").text().trim();
+          const jobDescription = $(element).find(":contains('Description')").text().trim();
+          const jobCompany = $(element).find(":contains('Company')").text().trim();
+          const jobOffer = parseFloat($(element).find(":contains('Offer')").text().trim().replace(/[^0-9.-]+/g, ""));
+          const jobDate = new Date($(element).find("time").attr("datetime"));
 
           const descriptionSimilarity = similarity(description, jobDescription);
 
@@ -39,7 +43,7 @@ export default async function handler(req, res) {
         const response = await axios.get(url);
         const html = response.data;
         const $ = cheerio.load(html);
-        getLeadsFromPage($);
+        getLeadsFromPage($, html);
         return $;
       };
 
