@@ -24,7 +24,14 @@ const Results = () => {
         <Text fontSize="2xl" fontWeight="bold">Fetched Leads</Text>
         {leads.length > 0 ? (
           leads.map((lead, index) => (
-            <Box key={index} p={4} borderWidth="1px" borderRadius="md" width="100%">
+            <Box
+              key={index}
+              p={4}
+              borderWidth="1px"
+              borderRadius="md"
+              width="100%"
+              bg={lead.isSelected ? "yellow.100" : "white"}
+            >
               <Text>Title: {lead.title}</Text>
               <Text>Description: {lead.description}</Text>
               <Text>Company: {lead.company}</Text>

@@ -4,19 +4,23 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const Configure = () => {
-  const [threshold, setThreshold] = useState("");
+  const [minOffer, setMinOffer] = useState("");
+  const [maxPagination, setMaxPagination] = useState("");
+  const [filterRecent, setFilterRecent] = useState(false);
   const [domain, setDomain] = useState("");
   const [description, setDescription] = useState("");
 
   const navigate = useNavigate();
 
-  const handleThresholdChange = (e) => setThreshold(e.target.value);
+  const handleMinOfferChange = (e) => setMinOffer(e.target.value);
+  const handleMaxPaginationChange = (e) => setMaxPagination(e.target.value);
+  const handleFilterRecentChange = () => setFilterRecent(!filterRecent);
   const handleDomainChange = (e) => setDomain(e.target.value);
   const handleDescriptionChange = (e) => setDescription(e.target.value);
 
   const handleSubmit = async () => {
     try {
-      await axios.post("/api/crawl", { domain, description, threshold });
+      await axios.post("/api/crawl", { domain, description, minOffer, maxPagination, filterRecent });
       navigate("/results");
     } catch (error) {
       console.error("Error submitting configuration:", error);
@@ -30,9 +34,19 @@ const Configure = () => {
           <FormLabel>Target Domain</FormLabel>
           <Input type="text" value={domain} onChange={handleDomainChange} />
         </FormControl>
-        <FormControl id="threshold">
-          <FormLabel>Set Lead Threshold</FormLabel>
-          <Input type="number" value={threshold} onChange={handleThresholdChange} />
+        <FormControl id="minOffer">
+          <FormLabel>Minimum Offer</FormLabel>
+          <Input type="number" value={minOffer} onChange={handleMinOfferChange} />
+        </FormControl>
+        <FormControl id="maxPagination">
+          <FormLabel>Max Pagination</FormLabel>
+          <Input type="number" value={maxPagination} onChange={handleMaxPaginationChange} />
+        </FormControl>
+        <FormControl id="filterRecent">
+          <FormLabel>Filter Recent</FormLabel>
+          <Button onClick={handleFilterRecentChange} colorScheme={filterRecent ? "teal" : "gray"}>
+            {filterRecent ? "Enabled" : "Disabled"}
+          </Button>
         </FormControl>
         <FormControl id="description">
           <FormLabel>Lead Description</FormLabel>

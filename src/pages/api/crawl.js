@@ -1,9 +1,10 @@
 import axios from "axios";
 import cheerio from "cheerio";
+import natural from "natural";
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
-    const { domain, description, threshold } = req.body;
+    const { domain, description, minOffer, maxPagination, filterRecent } = req.body;
 
     try {
       const response = await axios.get(domain);
@@ -11,16 +12,29 @@ export default async function handler(req, res) {
       const $ = cheerio.load(html);
 
       const leads = [];
-      $("div.JobSearchCard-item").each((index, element) => {
-        const jobTitle = $(element).find("a.JobSearchCard-primary-heading-link").text().trim();
-        const jobDescription = $(element).find("p.JobSearchCard-primary-description").text().trim();
-        const jobCompany = $(element).find("a.JobSearchCard-primary-subtitle-link").text().trim();
+      const tokenizer = new natural.WordTokenizer();
+      const descriptionTokens = tokenizer.tokenize(description.toLowerCase());
 
-        if (jobDescription.includes(description)) {
+      const selectors = {
+        jobTitle: "a:contains('job')",
+        jobDescription: "p:contains('description')",
+        jobCompany: "a:contains('company')",
+      };
+
+      $("div:contains('Job')").each((index, element) => {
+        const jobTitle = $(element).find(selectors.jobTitle).text().trim();
+        const jobDescription = $(element).find(selectors.jobDescription).text().trim();
+        const jobCompany = $(element).find(selectors.jobCompany).text().trim();
+
+        const jobDescriptionTokens = tokenizer.tokenize(jobDescription.toLowerCase());
+        const similarity = natural.JaroWinklerDistance(descriptionTokens.join(" "), jobDescriptionTokens.join(" "));
+
+        if (similarity > 0.7) {
           leads.push({
             title: jobTitle,
             description: jobDescription,
             company: jobCompany,
+            highlighted: true,
           });
         }
       });
