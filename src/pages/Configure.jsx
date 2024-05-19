@@ -1,12 +1,12 @@
-import { Box, Button, Container, FormControl, FormLabel, Input, VStack } from "@chakra-ui/react";
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Container, TextField, Button, Box, Typography } from '@mui/material';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 
 const Configure = () => {
-  const [threshold, setThreshold] = useState("");
-  const [domain, setDomain] = useState("");
-  const [description, setDescription] = useState("");
+  const [threshold, setThreshold] = useState('');
+  const [domain, setDomain] = useState('');
+  const [description, setDescription] = useState('');
 
   const navigate = useNavigate();
 
@@ -24,22 +24,42 @@ const Configure = () => {
   };
 
   return (
-    <Container centerContent maxW="container.md" py={10}>
-      <VStack spacing={4} width="100%">
-        <FormControl id="domain">
-          <FormLabel>Target Domain</FormLabel>
-          <Input type="text" value={domain} onChange={handleDomainChange} />
-        </FormControl>
-        <FormControl id="threshold">
-          <FormLabel>Set Lead Threshold</FormLabel>
-          <Input type="number" value={threshold} onChange={handleThresholdChange} />
-        </FormControl>
-        <FormControl id="description">
-          <FormLabel>Lead Description</FormLabel>
-          <Input type="text" value={description} onChange={handleDescriptionChange} />
-        </FormControl>
-        <Button colorScheme="teal" size="lg" onClick={handleSubmit}>Save and Fetch Leads</Button>
-      </VStack>
+    <Container maxWidth="sm">
+      <Box my={4}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          Configure Lead Generation
+        </Typography>
+        <TextField
+          fullWidth
+          label="Target Domain"
+          value={domain}
+          onChange={handleDomainChange}
+          margin="normal"
+        />
+        <TextField
+          fullWidth
+          label="Set Lead Threshold"
+          type="number"
+          value={threshold}
+          onChange={handleThresholdChange}
+          margin="normal"
+        />
+        <TextField
+          fullWidth
+          label="Lead Description"
+          value={description}
+          onChange={handleDescriptionChange}
+          margin="normal"
+        />
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleSubmit}
+          sx={{ mt: 2 }}
+        >
+          Save and Fetch Leads
+        </Button>
+      </Box>
     </Container>
   );
 };
