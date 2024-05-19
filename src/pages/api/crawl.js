@@ -1,5 +1,8 @@
 import axios from "axios";
 import cheerio from "cheerio";
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
+const { similarity } = require("ml-string-similarity");
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
@@ -17,13 +20,16 @@ export default async function handler(req, res) {
           const jobOffer = parseFloat($(element).find("span.JobSearchCard-primary-offer").text().trim().replace(/[^0-9.-]+/g, ""));
           const jobDate = new Date($(element).find("time.JobSearchCard-primary-date").attr("datetime"));
 
-          if (jobDescription.includes(description) && jobOffer >= minOffer) {
+          const descriptionSimilarity = similarity(description, jobDescription);
+
+          if (descriptionSimilarity > 0.7 && jobOffer >= minOffer) {
             leads.push({
               title: jobTitle,
               description: jobDescription,
               company: jobCompany,
               offer: jobOffer,
               date: jobDate,
+              similarity: descriptionSimilarity,
             });
           }
         });
