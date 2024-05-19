@@ -1,14 +1,23 @@
-import { Container, Text, VStack, Button } from "@chakra-ui/react";
+import { Container, Typography, Button, Box } from "@mui/material";
 import { Link } from "react-router-dom";
 
 const Index = () => {
   return (
-    <Container centerContent maxW="container.md" height="100vh" display="flex" flexDirection="column" justifyContent="center" alignItems="center">
-      <VStack spacing={4}>
-        <Text fontSize="4xl" fontWeight="bold">Welcome to LeadGen</Text>
-        <Text fontSize="xl">Your ultimate tool for generating leads efficiently.</Text>
-        <Button as={Link} to="/configure" colorScheme="teal" size="lg">Get Started Now</Button>
-      </VStack>
+    <Container maxWidth="md" sx={{ height: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+      <Box textAlign="center">
+        <Typography variant="h2" gutterBottom>Welcome to LeadGen</Typography>
+        <Typography variant="h5" gutterBottom>Your ultimate tool for generating leads efficiently.</Typography>
+        <Button
+          component={Link}
+          to="/configure"
+          variant="contained"
+          color="primary"
+          size="large"
+          sx={{ mt: 3 }}
+        >
+          Get Started Now
+        </Button>
+      </Box>
     </Container>
   );
 };
