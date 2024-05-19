@@ -23,6 +23,7 @@
         "@chakra-ui/react": "^2.8.2",
         "@emotion/react": "^11.11.1",
         "@emotion/styled": "^11.11.0",
+        "@mui/material": "^5.15.18",
         "axios": "^1.6.8",
         "cheerio": "^1.0.0-rc.12",
         "framer-motion": "^10.16.15",
