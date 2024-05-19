@@ -1,7 +1,6 @@
 import axios from "axios";
-import cheerio from "cheerio";
 import { createRequire } from "module";
-import { parseDocument } from "htmlparser2";
+
 const require = createRequire(import.meta.url);
 const { similarity } = require("ml-string-similarity");
 
@@ -13,16 +12,17 @@ export default async function handler(req, res) {
       const leads = [];
       let paginationCount = 0;
 
-      const getLeadsFromPage = ($, html) => {
-        const document = parseDocument(html);
-        const jobElements = $(document).find("div:contains('Job')");
+      const getLeadsFromPage = async (html) => {
+        // Call the LLM API to parse the HTML and extract job information
+        const response = await axios.post("https://api.example.com/parse-html", { html });
+        const jobs = response.data.jobs;
 
-        jobElements.each((index, element) => {
-          const jobTitle = $(element).find(":contains('Title')").text().trim();
-          const jobDescription = $(element).find(":contains('Description')").text().trim();
-          const jobCompany = $(element).find(":contains('Company')").text().trim();
-          const jobOffer = parseFloat($(element).find(":contains('Offer')").text().trim().replace(/[^0-9.-]+/g, ""));
-          const jobDate = new Date($(element).find("time").attr("datetime"));
+        jobs.forEach(job => {
+          const jobTitle = job.title;
+          const jobDescription = job.description;
+          const jobCompany = job.company;
+          const jobOffer = parseFloat(job.offer.replace(/[^0-9.-]+/g, ""));
+          const jobDate = new Date(job.date);
 
           const descriptionSimilarity = similarity(description, jobDescription);
 
@@ -42,17 +42,16 @@ export default async function handler(req, res) {
       const fetchPage = async (url) => {
         const response = await axios.get(url);
         const html = response.data;
-        const $ = cheerio.load(html);
-        getLeadsFromPage($, html);
-        return $;
+        await getLeadsFromPage(html);
+        return html;
       };
 
-      let $ = await fetchPage(domain);
+      let html = await fetchPage(domain);
 
       while (paginationCount < maxPagination) {
-        const nextPageLink = $("a.next-page").attr("href");
+        const nextPageLink = cheerio.load(html)("a.next-page").attr("href");
         if (!nextPageLink) break;
-        $ = await fetchPage(nextPageLink);
+        html = await fetchPage(nextPageLink);
         paginationCount++;
       }
 
