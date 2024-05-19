@@ -3,27 +3,52 @@ import cheerio from "cheerio";
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
-    const { domain, description, threshold } = req.body;
+    const { domain, description, minOffer, filterRecent, maxPagination } = req.body;
 
     try {
-      const response = await axios.get(domain);
-      const html = response.data;
-      const $ = cheerio.load(html);
-
       const leads = [];
-      $("div.JobSearchCard-item").each((index, element) => {
-        const jobTitle = $(element).find("a.JobSearchCard-primary-heading-link").text().trim();
-        const jobDescription = $(element).find("p.JobSearchCard-primary-description").text().trim();
-        const jobCompany = $(element).find("a.JobSearchCard-primary-subtitle-link").text().trim();
+      let paginationCount = 0;
 
-        if (jobDescription.includes(description)) {
-          leads.push({
-            title: jobTitle,
-            description: jobDescription,
-            company: jobCompany,
-          });
-        }
-      });
+      const getLeadsFromPage = ($) => {
+        $("div.JobSearchCard-item").each((index, element) => {
+          const jobTitle = $(element).find("a.JobSearchCard-primary-heading-link").text().trim();
+          const jobDescription = $(element).find("p.JobSearchCard-primary-description").text().trim();
+          const jobCompany = $(element).find("a.JobSearchCard-primary-subtitle-link").text().trim();
+          const jobOffer = parseFloat($(element).find("span.JobSearchCard-primary-offer").text().trim().replace(/[^0-9.-]+/g, ""));
+          const jobDate = new Date($(element).find("time.JobSearchCard-primary-date").attr("datetime"));
+
+          if (jobDescription.includes(description) && jobOffer >= minOffer) {
+            leads.push({
+              title: jobTitle,
+              description: jobDescription,
+              company: jobCompany,
+              offer: jobOffer,
+              date: jobDate,
+            });
+          }
+        });
+      };
+
+      const fetchPage = async (url) => {
+        const response = await axios.get(url);
+        const html = response.data;
+        const $ = cheerio.load(html);
+        getLeadsFromPage($);
+        return $;
+      };
+
+      let $ = await fetchPage(domain);
+
+      while (paginationCount < maxPagination) {
+        const nextPageLink = $("a.next-page").attr("href");
+        if (!nextPageLink) break;
+        $ = await fetchPage(nextPageLink);
+        paginationCount++;
+      }
+
+      if (filterRecent) {
+        leads.sort((a, b) => b.date - a.date);
+      }
 
       res.status(200).json(leads);
     } catch (error) {

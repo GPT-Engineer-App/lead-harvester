@@ -1,22 +1,26 @@
-import { Box, Button, Container, FormControl, FormLabel, Input, VStack } from "@chakra-ui/react";
+import { Box, Button, Container, FormControl, FormLabel, Input, VStack, Switch, HStack } from "@chakra-ui/react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const Configure = () => {
-  const [threshold, setThreshold] = useState("");
+  const [minOffer, setMinOffer] = useState("");
+  const [filterRecent, setFilterRecent] = useState(false);
+  const [maxPagination, setMaxPagination] = useState("");
   const [domain, setDomain] = useState("");
   const [description, setDescription] = useState("");
 
   const navigate = useNavigate();
 
-  const handleThresholdChange = (e) => setThreshold(e.target.value);
+  const handleMinOfferChange = (e) => setMinOffer(e.target.value);
+  const handleFilterRecentChange = (e) => setFilterRecent(e.target.checked);
+  const handleMaxPaginationChange = (e) => setMaxPagination(e.target.value);
   const handleDomainChange = (e) => setDomain(e.target.value);
   const handleDescriptionChange = (e) => setDescription(e.target.value);
 
   const handleSubmit = async () => {
     try {
-      await axios.post("/api/crawl", { domain, description, threshold });
+      await axios.post("/api/crawl", { domain, description, minOffer, filterRecent, maxPagination });
       navigate("/results");
     } catch (error) {
       console.error("Error submitting configuration:", error);
@@ -30,9 +34,19 @@ const Configure = () => {
           <FormLabel>Target Domain</FormLabel>
           <Input type="text" value={domain} onChange={handleDomainChange} />
         </FormControl>
-        <FormControl id="threshold">
-          <FormLabel>Set Lead Threshold</FormLabel>
-          <Input type="number" value={threshold} onChange={handleThresholdChange} />
+        <FormControl id="minOffer">
+          <FormLabel>Minimum Offer</FormLabel>
+          <Input type="number" value={minOffer} onChange={handleMinOfferChange} />
+        </FormControl>
+        <FormControl display="flex" alignItems="center">
+          <FormLabel htmlFor="filter-recent" mb="0">
+            Filter by Most Recent Postings
+          </FormLabel>
+          <Switch id="filter-recent" isChecked={filterRecent} onChange={handleFilterRecentChange} />
+        </FormControl>
+        <FormControl id="maxPagination">
+          <FormLabel>Max Pagination to Crawl</FormLabel>
+          <Input type="number" value={maxPagination} onChange={handleMaxPaginationChange} />
         </FormControl>
         <FormControl id="description">
           <FormLabel>Lead Description</FormLabel>
