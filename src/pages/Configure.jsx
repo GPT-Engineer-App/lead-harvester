@@ -9,6 +9,7 @@ const Configure = () => {
   const [maxPagination, setMaxPagination] = useState("");
   const [domain, setDomain] = useState("");
   const [description, setDescription] = useState("");
+  const [fetchAllListings, setFetchAllListings] = useState(false);
 
   const navigate = useNavigate();
 
@@ -18,9 +19,11 @@ const Configure = () => {
   const handleDomainChange = (e) => setDomain(e.target.value);
   const handleDescriptionChange = (e) => setDescription(e.target.value);
 
+  const handleFetchAllListingsChange = (e) => setFetchAllListings(e.target.checked);
+
   const handleSubmit = async () => {
     try {
-      await axios.post("/api/crawl", { domain, description, minOffer, filterRecent, maxPagination });
+      await axios.post("/api/crawl", { domain, description, minOffer, filterRecent, maxPagination, fetchAllListings });
       navigate("/results");
     } catch (error) {
       console.error("Error submitting configuration:", error);
@@ -34,7 +37,13 @@ const Configure = () => {
           <FormLabel>Target Domain</FormLabel>
           <Input type="text" value={domain} onChange={handleDomainChange} />
         </FormControl>
-        <FormControl id="minOffer">
+        <FormControl display="flex" alignItems="center">
+          <FormLabel htmlFor="fetch-all-listings" mb="0">
+            Fetch All Listings
+          </FormLabel>
+          <Switch id="fetch-all-listings" isChecked={fetchAllListings} onChange={handleFetchAllListingsChange} />
+        </FormControl>
+        <FormControl id="minOffer" isDisabled={fetchAllListings}>
           <FormLabel>Minimum Offer</FormLabel>
           <Input type="number" value={minOffer} onChange={handleMinOfferChange} />
         </FormControl>
@@ -48,7 +57,7 @@ const Configure = () => {
           <FormLabel>Max Pagination to Crawl</FormLabel>
           <Input type="number" value={maxPagination} onChange={handleMaxPaginationChange} />
         </FormControl>
-        <FormControl id="description">
+        <FormControl id="description" isDisabled={fetchAllListings}>
           <FormLabel>Lead Description</FormLabel>
           <Input type="text" value={description} onChange={handleDescriptionChange} />
         </FormControl>

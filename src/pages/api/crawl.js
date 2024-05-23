@@ -7,7 +7,7 @@ const { similarity } = require("ml-string-similarity");
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
-    const { domain, description, minOffer, filterRecent, maxPagination } = req.body;
+    const { domain, description, minOffer, filterRecent, maxPagination, fetchAllListings } = req.body;
 
     try {
       const leads = [];
@@ -24,16 +24,14 @@ export default async function handler(req, res) {
           const jobOffer = parseFloat($(element).find(":contains('Offer')").text().trim().replace(/[^0-9.-]+/g, ""));
           const jobDate = new Date($(element).find("time").attr("datetime"));
 
-          const descriptionSimilarity = similarity(description, jobDescription);
-
-          if (descriptionSimilarity > 0.7 && jobOffer >= minOffer) {
+          if (fetchAllListings || (similarity(description, jobDescription) > 0.7 && jobOffer >= minOffer)) {
             leads.push({
               title: jobTitle,
               description: jobDescription,
               company: jobCompany,
               offer: jobOffer,
               date: jobDate,
-              similarity: descriptionSimilarity,
+              similarity: similarity(description, jobDescription),
             });
           }
         });
